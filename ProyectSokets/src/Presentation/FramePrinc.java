@@ -13,5 +13,8 @@ public class FramePrinc extends JFrame{
 	private JTextField textFieldUser;
 	private JButton buttonAceptar;
 	
+	public FramePrinc (){
+		
+	}
 }
 
