@@ -19,7 +19,7 @@ public class Conexion implements Runnable{
 	private DataOutputStream dataOutputStream;//canal de salida
 	private boolean estado;
 	private int opcion = Integer.MAX_VALUE;
-	private String mensaje;
+	private String mensaje,nombreUsuario;
 
 
 	public Conexion(Socket socketNew) {
@@ -29,7 +29,7 @@ public class Conexion implements Runnable{
 		try {
 			dataInputStream = new DataInputStream(socketConex.getInputStream());
 
-			JOptionPane.showMessageDialog(null, "Creado canal de entrada");
+//			JOptionPane.showMessageDialog(null, "Creado canal de entrada");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -37,15 +37,23 @@ public class Conexion implements Runnable{
 		try {
 			dataOutputStream = new DataOutputStream(socketConex.getOutputStream());
 			
-			JOptionPane.showMessageDialog(null, "Creado canal de salida");
+//			JOptionPane.showMessageDialog(null, "Creado canal de salida");
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		iniciarConexion(1);
 		
+	try {
+		nombreUsuario = dataInputStream.readUTF();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+		iniciarConexion(1,"conexion exitosa");
 		Thread hilo = new Thread(this);
 		hilo.start();
+		
 	}
 
 	public  void run() {
@@ -60,20 +68,16 @@ public class Conexion implements Runnable{
 			} 
 			switch (opcion) {
 			case 1:
+				
+				break;
+			case 2:
 				try {
 					
 					JOptionPane.showMessageDialog(null, dataInputStream.readUTF());
-					
-				} catch (HeadlessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				break;
-			case 0:
-				enviarMensaje(mensaje);
 				break;
 
 			case 3:
@@ -89,17 +93,15 @@ public class Conexion implements Runnable{
 		}	
 	}
 
-	public void iniciarConexion (int n){
+	public void iniciarConexion (int n,String mensaje){
 		try {
 			dataOutputStream.writeInt(n);//envio de opcion o bandera
 		} catch (IOException e) {
 			
 			e.printStackTrace();
-			
 		}
 		try {
-			
-			dataOutputStream.writeUTF("se digito la opcion: asdfasfa ");//envio del mensaje con esa opcion
+			dataOutputStream.writeUTF(mensaje);//envio del mensaje con esa opcion
 			
 		} catch (IOException e) {
 			
@@ -108,32 +110,32 @@ public class Conexion implements Runnable{
 		}	
 	}
 
-	public void enviarMensaje(String mensaje){
-		try {
-			dataOutputStream.writeUTF(mensaje);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void enviarMensaje(String mensaje){
+//		try {
+//			dataOutputStream.writeUTF(mensaje);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	public void cerrarConexion(){
 		try {
 			dataInputStream.close();
-			JOptionPane.showMessageDialog(null, "Cerrado canal de entrada");
+//			JOptionPane.showMessageDialog(null, "Cerrado canal de entrada");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
 			dataOutputStream.close();
-			JOptionPane.showMessageDialog(null, "Cerrado canal de salida");
+//			JOptionPane.showMessageDialog(null, "Cerrado canal de salida");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
 			socketConex.close();
-			JOptionPane.showMessageDialog(null, "Cerrado el cliente");
+//			JOptionPane.showMessageDialog(null, "Cerrado el cliente");
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -187,6 +189,14 @@ public class Conexion implements Runnable{
 
 	public void setMensaje(String mensaje) {
 		this.mensaje = mensaje;
+	}
+
+	public String getNombreUsuario() {
+		return nombreUsuario;
+	}
+
+	public void setNombreUsuario(String nombreUsuario) {
+		this.nombreUsuario = nombreUsuario;
 	}
 	
 }

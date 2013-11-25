@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import javax.print.DocFlavor.INPUT_STREAM;
 import javax.swing.JOptionPane;
 
+import Presentation.FrameCliente;
+
+//import Presentation.FrameCliente;
 
 
 
@@ -22,37 +25,43 @@ public class Cliente implements Runnable {
 	private Socket socket;
 	private DataInputStream dataInputStream;//canal de entrada 
 	private DataOutputStream dataOutputStream;//canal de salida
-	private String direccionIp;
+	private String direccionIp,nombreUsuario;
 	private int puertoCliente;
 	private boolean estado;
 	private int opcion = Integer.MAX_VALUE;
-//	private FrameCliente fcliente;
+	private FrameCliente frameCliente;
 
-	public Cliente( )  {
-//		this.fcliente = cliente;
-		puertoCliente = 4450;
+	public Cliente(FrameCliente frameCliente,String ip, String usuario)  {
+		puertoCliente = 4451;
+		this.nombreUsuario = usuario;
+		this.frameCliente = frameCliente;
 		try {
-			socket = new Socket(Inet4Address.getLocalHost(), 4450);
-			JOptionPane.showMessageDialog(null, "Creado el cliente");
+			socket = new Socket(ip, 4451);
+//			JOptionPane.showMessageDialog(null, "Creado el cliente");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
 			dataInputStream = new DataInputStream(socket.getInputStream());
-			JOptionPane.showMessageDialog(null, "Creado canal de entrada");
+//			JOptionPane.showMessageDialog(null, "Creado canal de entrada");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
 			dataOutputStream = new DataOutputStream(socket.getOutputStream());
-			JOptionPane.showMessageDialog(null, "Creado canal de salida");
+//			JOptionPane.showMessageDialog(null, "Creado canal de salida");
 		} catch (IOException e) {
 			
 			e.printStackTrace();
 		}
-		
+		try {
+			dataOutputStream.writeUTF(usuario);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Thread hilo = new Thread(this);
 		hilo.start();
 		
@@ -66,16 +75,16 @@ public class Cliente implements Runnable {
 
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.out.println("se desconecto el cliente");
 			} 
 			
-			System.out.println("opcion: "+opcion);
+//			System.out.println("opcion: "+opcion);
 			
 			switch (opcion) {
 			case 1:
 				try {
 					
 					JOptionPane.showMessageDialog(null, dataInputStream.readUTF());
-//					fcliente.getArea().setText(dataInputStream.readUTF());
 					
 				} catch (HeadlessException e) {
 					e.printStackTrace();
@@ -85,10 +94,28 @@ public class Cliente implements Runnable {
 				break;
 			case 2:
 				
+				String[] list = null;
+				try {
+					list = dataInputStream.readUTF().split(";");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				for (int i = 0; i < list.length; i++) {
+					frameCliente.getBoxConciertos().addItem(list[i]);
+				}
 				break;
 
 			case 3:
-
+				try {
+					JOptionPane.showMessageDialog(null, dataInputStream.readUTF());
+				} catch (HeadlessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 				
 			default:
